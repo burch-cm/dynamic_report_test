@@ -1,0 +1,50 @@
+---
+title: "Test Report"
+author: "Nemo"
+date: "`r Sys.Date()`"
+output:
+    prettydoc::html_pretty:
+        theme: architect
+        highlight: github
+params:
+    data: ""
+---
+```{r setup, echo=FALSE, include=FALSE}
+library(tidyverse)
+library(readxl)
+library(kableExtra)
+library(ggplot2)
+library(ggthemes)
+lipsum <- readRDS(fs::path_wd("..", "data", "lipsum.rds"))
+```
+
+
+# Introduction  
+
+`r lipsum[2]`
+
+# Analysis  
+```{r read_data, echo=FALSE, message=FALSE}
+fn  <- params$data
+dat <- readxl::read_excel(path = fn)
+
+t1 <- dat %>%
+    group_by(`Asset Type` = type) %>%
+    summarise(`Count of Records` = n(),
+              `Total Amount` = sum(amount, na.rm = TRUE))
+
+t1 %>% 
+    kable() %>%
+    kable_styling(bootstrap_options = c("striped", "bordered"),
+                  full_width = FALSE, position = "float_right")
+```
+
+`r lipsum[3]`
+
+```{r chart, echo = FALSE, message = FALSE}
+t1 %>%
+    ggplot(aes(x = `Asset Type`, y = `Total Amount`)) +
+    geom_bar(stat = "identity", aes(fill = `Asset Type`)) +
+    theme_fivethirtyeight()
+```
+
